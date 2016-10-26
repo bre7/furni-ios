@@ -1,25 +1,25 @@
 PODS:
-  - Alamofire (2.0.2)
-  - AlamofireImage (1.1.2):
-    - Alamofire (~> 2.0)
-  - AWSCognito (2.4.5):
-    - AWSCore (= 2.4.5)
-  - AWSCore (2.4.5)
-  - Crashlytics (3.7.2):
+  - Alamofire (4.0.1)
+  - AlamofireImage (3.1.0):
+    - Alamofire (~> 4.0)
+  - AWSCognito (2.4.11):
+    - AWSCore (= 2.4.11)
+  - AWSCore (2.4.11)
+  - Crashlytics (3.8.3):
     - Fabric (~> 1.6.3)
-  - Digits (2.3.0):
-    - TwitterCore (= 2.3.0)
-  - Fabric (1.6.7)
-  - Optimizely-iOS-SDK (1.6.1)
-  - Stripe (8.0.3)
-  - TwitterCore (2.3.0):
+  - Digits (2.5.0):
+    - TwitterCore (= 2.5.0)
+  - Fabric (1.6.10)
+  - Optimizely-iOS-SDK (1.7.0)
+  - Stripe (9.0.0)
+  - TwitterCore (2.5.0):
     - Fabric
-  - TwitterKit (2.3.0):
-    - TwitterCore (= 2.3.0)
+  - TwitterKit (2.5.0):
+    - TwitterCore (= 2.5.0)
 
 DEPENDENCIES:
-  - Alamofire (~> 2.0)
-  - AlamofireImage (~> 1.0)
+  - Alamofire
+  - AlamofireImage
   - AWSCognito
   - Crashlytics
   - Digits
@@ -30,18 +30,18 @@ DEPENDENCIES:
   - TwitterKit
 
 SPEC CHECKSUMS:
-  Alamofire: 8edbab00802a752bb5240cc2abe70e7e881488ad
-  AlamofireImage: dc3d3de5d095fd9545b144ba8f6da5bfc539512a
-  AWSCognito: 96e1762404831ffb87f67c87a5ee68fde543bb69
-  AWSCore: 2f356385bcea9b81ea47f9be0228c71697d9597d
-  Crashlytics: 130ab943f8c78cda7a814b434f270b2e2c8a3cba
-  Digits: af82d24ec38035cc555b60f55cca5abc68a76bed
-  Fabric: caf7580c725e64db144f610ac65cd60956911dc7
-  Optimizely-iOS-SDK: 89d7f2647a805967586330cc52404f6b9ac919ab
-  Stripe: f5accf7bee18785aa4e6c59d9d79c4604a83ed3b
-  TwitterCore: 817eae3e291fa4125b47789e26a4f6f024115c1f
-  TwitterKit: 8a383da8d9c21b0423716381ea8bbfce20622d91
+  Alamofire: 7682d43245de14874acd142ec137b144aa1dd335
+  AlamofireImage: bb8c8351c51cb1633bb6be69b6dbbaff37ce65b7
+  AWSCognito: e086ad6f499e309dbf0030170cffc65a0bfd27c6
+  AWSCore: e66b0f50d68f9897cc9e68471062f0cb5379eec5
+  Crashlytics: 2b6dbe138a42395577cfa73dfa1aa7248cadf39e
+  Digits: c69ee2d1a6acf728c5d159f1bd335e4882bd3225
+  Fabric: c73f371ee543e3f0b80608f2674750e4910d1669
+  Optimizely-iOS-SDK: e406016e617f84e823227c52131341dc20721319
+  Stripe: 935c6deb5e96cbd29d247074bf3aa98a8438e22c
+  TwitterCore: 95c46af93112768a7983bd370d66023553601d01
+  TwitterKit: dd8042698b0ff5bd3066fa919b3b2b50d8eed829
 
-PODFILE CHECKSUM: d8db850ec4f5ea0e771b8f47787a2eb93dcd2a95
+PODFILE CHECKSUM: 38885492e93b9e1963cc2bc879c5ea924a3d4d49
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.1.1
