@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		248D07B91DC0502200F14601 /* collections.json in Resources */ = {isa = PBXBuildFile; fileRef = 248D07B81DC0502200F14601 /* collections.json */; };
 		3C1CB0237A2E80DED5D4985B /* Pods_Furni.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C3D918D632A1C53D1577DE4 /* Pods_Furni.framework */; };
 		920082EC1B9CA84A00714ECF /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920082EB1B9CA84A00714ECF /* SignInViewController.swift */; };
 		920082EE1B9CA89700714ECF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 920082ED1B9CA89700714ECF /* Extensions.swift */; };
@@ -53,6 +54,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		248D07B81DC0502200F14601 /* collections.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = collections.json; sourceTree = "<group>"; };
 		7C3D918D632A1C53D1577DE4 /* Pods_Furni.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Furni.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D33F4B21BD4458B00D4829D /* Furni.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Furni.entitlements; sourceTree = "<group>"; };
 		7DF0D0A91BD3235A0019165B /* Appfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = Appfile; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 		92E33A511B7FF259009A4341 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				248D07B81DC0502200F14601 /* collections.json */,
 				925061051BB1920400F5AE23 /* CartFooterCell.swift */,
 				925061031BB1698C00F5AE23 /* CartItemCell.swift */,
 				928EBABB1B80D4A70067F4FB /* CollectionCell.swift */,
@@ -354,6 +357,7 @@
 				929C1EAB1B7F8AC70045C970 /* Main.storyboard in Resources */,
 				92A0282A1BC4AE8A00E0B097 /* LaunchScreen.storyboard in Resources */,
 				929C1EAD1B7F8AC70045C970 /* Images.xcassets in Resources */,
+				248D07B91DC0502200F14601 /* collections.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
