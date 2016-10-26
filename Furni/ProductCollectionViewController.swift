@@ -25,9 +25,9 @@ final class ProductCollectionViewController: UICollectionViewController {
 
     var collection: Collection!
 
-    private var headerImageView: UIImageView?
+    fileprivate var headerImageView: UIImageView?
 
-    private var refreshControl: UIRefreshControl!
+    fileprivate var refreshControl: UIRefreshControl!
 
     // MARK: View Life Cycle
 
@@ -35,21 +35,21 @@ final class ProductCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
 
         // Customize the navigation bar.
-        let shareButton = UIBarButtonItem(title: "Share", style: .Plain, target: self, action: #selector(ProductCollectionViewController.shareButtonTapped))
+        let shareButton = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(ProductCollectionViewController.shareButtonTapped))
         navigationItem.rightBarButtonItem = shareButton
         navigationItem.title = collection.name
 
         // Setup the refresh control.
         refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: Selector("fetchCollectionProducts"), forControlEvents: .ValueChanged)
+        refreshControl.addTarget(self, action: #selector(fetchCollectionProducts), for: .valueChanged)
         collectionView!.addSubview(refreshControl)
-        collectionView!.sendSubviewToBack(refreshControl)
+        collectionView!.sendSubview(toBack: refreshControl)
 
         // Fetch products from the API.
         fetchCollectionProducts()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Tie this selected collection to any crashes in Crashlytics.
@@ -58,12 +58,12 @@ final class ProductCollectionViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDataSource
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return collection.products.count
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(ProductCell.reuseIdentifier, forIndexPath: indexPath) as! ProductCell
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.reuseIdentifier, for: indexPath) as! ProductCell
 
         // Find the corresponding product.
         let product = collection.products[indexPath.row]
@@ -75,20 +75,20 @@ final class ProductCollectionViewController: UICollectionViewController {
         return cell
     }
 
-    override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionElementKindSectionHeader else { return UICollectionReusableView() }
 
         // Dequeue the collection header view.
-        let collectionHeaderView = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: "CollectionHeader", forIndexPath: indexPath)
+        let collectionHeaderView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "CollectionHeader", for: indexPath)
 
         // Add the image subview by loading the banner from the network.
         let size = CGSize(width: collectionHeaderView.bounds.width, height: collectionHeaderView.bounds.height)
         headerImageView = UIImageView(frame: collectionHeaderView.frame)
-        headerImageView!.af_setImageWithURL(
-            collection.largeImageURL,
+        headerImageView!.af_setImage(
+            withURL: collection.largeImageURL,
             placeholderImage: UIImage(named: "Placeholder"),
             filter: AspectScaledToFillSizeFilter(size: size),
-            imageTransition: .CrossDissolve(0.6)
+            imageTransition: .crossDissolve(0.6)
         )
         collectionHeaderView.addSubview(headerImageView!)
 
@@ -97,7 +97,7 @@ final class ProductCollectionViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDelegate
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
         let spacing = (collectionView.collectionViewLayout as! UICollectionViewFlowLayout).sectionInset.left
         let width = (view.bounds.width - 3 * spacing) / 2
         return CGSize(width: width, height: width + 50)
@@ -105,39 +105,39 @@ final class ProductCollectionViewController: UICollectionViewController {
 
     // MARK: UIStoryboardSegue Handling
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let cell = sender as! ProductCell
 
-        let productDetailViewController = segue.destinationViewController as! ProductDetailViewController
+        let productDetailViewController = segue.destination as! ProductDetailViewController
         productDetailViewController.product = cell.product
     }
 
     // MARK: Actions
 
-    @objc private func shareButtonTapped() {
+    @objc fileprivate func shareButtonTapped() {
         // Use the TwitterKit to create a Tweet composer.
         let composer = TWTRComposer()
 
         // Prepare the Tweet with an image and a URL.
         composer.setText("Check out this amazing collection of products I found on @furni!")
         composer.setImage(headerImageView?.image!)
-        composer.setURL(collection?.collectionURL)
+        composer.setURL(collection?.collectionURL as URL?)
 
         // Present the composer to the user.
-        composer.showFromViewController(self) { result in
-            if result == .Done {
+        composer.show(from: self) { result in
+            if result == .done {
                 // Log Custom Event in Answers.
-                Answers.logCustomEventWithName("Tweet Completed", customAttributes: nil)
-            } else if result == .Cancelled {
+                Answers.logCustomEvent(withName: "Tweet Completed", customAttributes: nil)
+            } else if result == .cancelled {
                 // Log Custom Event in Answers.
-                Answers.logCustomEventWithName("Tweet Cancelled", customAttributes: nil)
+                Answers.logCustomEvent(withName: "Tweet Cancelled", customAttributes: nil)
             }
         }
     }
 
     // MARK: API
 
-    private func fetchCollectionProducts() {
+    @objc fileprivate func fetchCollectionProducts() {
         // Fetch products from the API.
         FurniAPI.sharedInstance.getCollection(collection.permalink) { collection in
             // Save and reload the table.

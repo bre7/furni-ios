@@ -17,28 +17,28 @@
 import UIKit
 
 protocol CollectionTableViewCellType {
-    func configureWithCollection(collection: Collection)
+    func configureWithCollection(_ collection: Collection)
 
     static var reuseIdentifier: String { get }
 }
 
-final class CollectionTableViewDataSource<CellClass: CollectionTableViewCellType where CellClass: UITableViewCell>: NSObject, UITableViewDataSource {
+final class CollectionTableViewDataSource<CellClass: CollectionTableViewCellType>: NSObject, UITableViewDataSource where CellClass: UITableViewCell {
     var collections: [Collection] = []
 
     // MARK: UITableViewDataSource
 
-    final func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    final func numberOfSections(in tableView: UITableView) -> Int {
         // Return each collection as a table view section.
         return collections.count
     }
 
-    final func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    final func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows in the section.
         return 1
     }
 
-    final func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(CellClass.reuseIdentifier, forIndexPath: indexPath) as! CellClass
+    final func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: CellClass.reuseIdentifier, for: indexPath) as! CellClass
 
         // Find the corresponding collection.
         let collection = collections[indexPath.section]

@@ -25,28 +25,28 @@ final class ProductPreviewCollectionViewCell: UICollectionViewCell {
 
     var product: Product!
 
-    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet fileprivate var imageView: UIImageView!
 
     // MARK: View Life Cycle
 
     override func awakeFromNib() {
         // Draw a border around the cell.
         layer.masksToBounds = true
-        layer.borderColor = UIColor.furniBrownColor().CGColor
+        layer.borderColor = UIColor.furniBrownColor().cgColor
         layer.borderWidth = 0.5
         layer.cornerRadius = 3
     }
 
-    func configureWithProduct(product: Product) {
+    func configureWithProduct(_ product: Product) {
         self.product = product
         
         // Load the image from the network and give it the correct aspect ratio.
         let size = CGSize(width: self.bounds.width, height: self.bounds.height)
-        imageView.af_setImageWithURL(
-            product.imageURL,
+        imageView.af_setImage(
+            withURL: product.imageURL,
             placeholderImage: UIImage(named: "Placeholder"),
             filter: AspectScaledToFitSizeFilter(size: size),
-            imageTransition: .CrossDissolve(0.6)
+            imageTransition: .crossDissolve(0.6)
         )
     }
 }

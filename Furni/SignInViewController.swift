@@ -22,11 +22,11 @@ final class SignInViewController: UIViewController {
 
     // MARK: Properties
 
-    @IBOutlet private weak var signInDigitsButton: UIButton!
+    @IBOutlet fileprivate weak var signInDigitsButton: UIButton!
 
-    @IBOutlet private weak var signInTwitterButton: UIButton!
+    @IBOutlet fileprivate weak var signInTwitterButton: UIButton!
 
-    private var completion: ((success: Bool) -> ())?
+    fileprivate var completion: ((_ success: Bool) -> ())?
 
     // MARK: View Life Cycle
 
@@ -38,15 +38,15 @@ final class SignInViewController: UIViewController {
         signInTwitterButton.decorateForFurni()
 
         // Add custom images to the buttons with the proper rendering mode.
-        signInDigitsButton.setImage(UIImage(named: "Digits")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
-        signInTwitterButton.setImage(UIImage(named: "Twitter")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+        signInDigitsButton.setImage(UIImage(named: "Digits")?.withRenderingMode(.alwaysTemplate), for: UIControlState())
+        signInTwitterButton.setImage(UIImage(named: "Twitter")?.withRenderingMode(.alwaysTemplate), for: UIControlState())
     }
 
-    private func authenticateWithService(service: Service) {
+    fileprivate func authenticateWithService(_ service: Service) {
         AccountManager.defaultAccountManager.authenticateWithService(service) { success in
             if success {
-                self.dismissViewControllerAnimated(true) {
-                    self.completion?(success: success)
+                self.dismiss(animated: true) {
+                    self.completion?(success)
                     self.completion = nil
                 }
             }
@@ -55,24 +55,24 @@ final class SignInViewController: UIViewController {
 
     // MARK: IBActions
 
-    @IBAction private func signInDigitsButtonTapped(sender: UIButton) {
+    @IBAction fileprivate func signInDigitsButtonTapped(_ sender: UIButton) {
         self.authenticateWithService(.Digits)
     }
 
-    @IBAction private func signInTwitterButtonTapped(sender: UIButton) {
+    @IBAction fileprivate func signInTwitterButtonTapped(_ sender: UIButton) {
         self.authenticateWithService(.Twitter)
     }
 
-    @IBAction private func closeButtonTapped(sender: AnyObject) {
-        appDelegate.tabBarController.dismissViewControllerAnimated(true) { }
+    @IBAction fileprivate func closeButtonTapped(_ sender: AnyObject) {
+        appDelegate.tabBarController.dismiss(animated: true) { }
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
 
-    static func presentSignInViewController(withCompletion completion: (Bool -> ())) {
-        let signInViewController = UIStoryboard.mainStoryboard.instantiateViewControllerWithIdentifier(SignInViewController.storyboardIdentifier) as! SignInViewController
+    static func presentSignInViewController(withCompletion completion: @escaping ((Bool) -> ())) {
+        let signInViewController = UIStoryboard.mainStoryboard.instantiateViewController(withIdentifier: SignInViewController.storyboardIdentifier) as! SignInViewController
         signInViewController.completion = completion
 
         // Create a blur effect.
@@ -83,10 +83,10 @@ final class SignInViewController: UIViewController {
         // signInViewController.view.insertSubview(blurEffectView, atIndex: 0)
 
         // Customize the sign in view controller presentation and transition styles.
-        signInViewController.modalPresentationStyle = .OverCurrentContext
-        signInViewController.modalTransitionStyle = .CrossDissolve
+        signInViewController.modalPresentationStyle = .overCurrentContext
+        signInViewController.modalTransitionStyle = .crossDissolve
 
         // Present the sign in view controller.
-        appDelegate.tabBarController.presentViewController(signInViewController, animated: true, completion: nil)
+        appDelegate.tabBarController.present(signInViewController, animated: true, completion: nil)
     }
 }

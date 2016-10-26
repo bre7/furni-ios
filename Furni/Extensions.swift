@@ -38,9 +38,9 @@ extension UIColor {
 
 extension String {
     // Remove some occurrences of characters in a string.
-    func stringByRemovingOccurrencesOfCharacters(chars: String) -> String {
+    func stringByRemovingOccurrencesOfCharacters(_ chars: String) -> String {
         let cs = characters.filter {
-            chars.characters.indexOf($0) == nil
+            chars.characters.index(of: $0) == nil
         }
 
         return String(cs)
@@ -50,10 +50,10 @@ extension String {
 extension Float {
     // Format a price with currency based on the device locale.
     var asCurrency: String {
-        let formatter = NSNumberFormatter()
-        formatter.numberStyle = .CurrencyStyle
-        formatter.locale = NSLocale.currentLocale()
-        return formatter.stringFromNumber(self)!
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        return formatter.string(from: NSNumber(value: self))!
     }
 }
 
@@ -67,10 +67,10 @@ extension UIButton {
 
 extension UIView {
     // Draw a border at the top of a view.
-    func drawTopBorderWithColor(color: UIColor, height: CGFloat) {
+    func drawTopBorderWithColor(_ color: UIColor, height: CGFloat) {
         let topBorder = CALayer()
-        topBorder.backgroundColor = color.CGColor
-        topBorder.frame = CGRectMake(0, 0, self.bounds.width, height)
+        topBorder.backgroundColor = color.cgColor
+        topBorder.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: height)
         self.layer.addSublayer(topBorder)
     }
 }
@@ -82,7 +82,7 @@ extension UIStoryboard {
 }
 
 extension UIImage {
-    static func favoriteImageForFavoritedState(favorited: Bool) -> UIImage {
+    static func favoriteImageForFavoritedState(_ favorited: Bool) -> UIImage {
         let imageName: String
 
         if favorited {

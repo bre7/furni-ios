@@ -17,7 +17,7 @@
 import UIKit
 
 final class ProductPreviewCollectionView: UICollectionView, UICollectionViewDataSource {
-    private var products: [Product] = [] {
+    fileprivate var products: [Product] = [] {
         didSet {
             self.reloadData()
         }
@@ -37,7 +37,7 @@ final class ProductPreviewCollectionView: UICollectionView, UICollectionViewData
         self.dataSource = self
     }
 
-    func configureWithCollection(collection: Collection) {
+    func configureWithCollection(_ collection: Collection) {
         self.collection = collection
 
         FurniAPI.sharedInstance.getCollection(collection.permalink) { collection in
@@ -56,12 +56,12 @@ final class ProductPreviewCollectionView: UICollectionView, UICollectionViewData
         layout.itemSize = CGSize(width: self.bounds.height, height: self.bounds.height)
     }
 
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.products.count
     }
 
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(ProductPreviewCollectionViewCell.reuseIdentifier, forIndexPath: indexPath) as! ProductPreviewCollectionViewCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductPreviewCollectionViewCell.reuseIdentifier, for: indexPath) as! ProductPreviewCollectionViewCell
 
         cell.configureWithProduct(self.products[indexPath.row])
 

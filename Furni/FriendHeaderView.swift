@@ -22,11 +22,11 @@ final class FriendHeaderView: UICollectionReusableView {
 
     static let reuseIdentifier = "FriendHeader"
 
-    @IBOutlet private weak var friendImageView: UIImageView!
+    @IBOutlet fileprivate weak var friendImageView: UIImageView!
 
-    @IBOutlet private weak var friendNameLabel: UILabel!
+    @IBOutlet fileprivate weak var friendNameLabel: UILabel!
 
-    @IBOutlet private weak var friendFavoriteCountLabel: UILabel!
+    @IBOutlet fileprivate weak var friendFavoriteCountLabel: UILabel!
 
     @IBOutlet weak var messageButton: UIButton!
 
@@ -34,13 +34,13 @@ final class FriendHeaderView: UICollectionReusableView {
 
     var showMessageButton: Bool = true {
         didSet {
-            self.messageButton.hidden = !showMessageButton
+            self.messageButton.isHidden = !showMessageButton
         }
     }
 
     var sendMessageCallback: (() -> ())!
 
-    @IBAction func sendMessageButtonTapped(sender: UIButton) {
+    @IBAction func sendMessageButtonTapped(_ sender: UIButton) {
         self.sendMessageCallback()
     }
 
@@ -62,7 +62,7 @@ final class FriendHeaderView: UICollectionReusableView {
         friendImageView.layer.masksToBounds = true
     }
 
-    func configureWithUser(user: User) {
+    func configureWithUser(_ user: User) {
         friendNameLabel.text = user.fullName
         friendImageView.image = user.image
         friendFavoriteCountLabel.text = "\(user.favorites.count) Favorites"

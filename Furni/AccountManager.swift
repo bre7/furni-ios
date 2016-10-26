@@ -26,22 +26,22 @@ enum Service: String {
 }
 
 final class AccountManager {
-    static func setUpDefaultAccountManager(accountManager: AccountManager) {
+    static func setUpDefaultAccountManager(_ accountManager: AccountManager) {
         defaultAccountManager = accountManager
     }
 
     static var defaultAccountManager: AccountManager!
 
     // Configure Cognito region and identity pool.
-    private static let CognitoRegionType = AWSRegionType.USEast1
-    private static let CognitoIdentityPoolID = "us-east-1:ff51fd44-1b2a-4ee6-978c-24537ad50c92"
+    fileprivate static let CognitoRegionType = AWSRegionType.usEast1
+    fileprivate static let CognitoIdentityPoolID = "us-east-1:ff51fd44-1b2a-4ee6-978c-24537ad50c92"
 
     // Setup the Cognito credentials provider.
-    private let credentialProvider = AWSCognitoCredentialsProvider(regionType: AccountManager.CognitoRegionType, identityPoolId: AccountManager.CognitoIdentityPoolID)
+    fileprivate let credentialProvider = AWSCognitoCredentialsProvider(regionType: AccountManager.CognitoRegionType, identityPoolId: AccountManager.CognitoIdentityPoolID)
 
-    private let syncClient: AWSCognito
+    fileprivate let syncClient: AWSCognito
 
-    private let awsServiceManager: AWSServiceManager
+    fileprivate let awsServiceManager: AWSServiceManager
 
     // Twitter identity.
     var twitterIdentity: TWTRSession? {
@@ -72,12 +72,12 @@ final class AccountManager {
     }
 
     init() {
-        self.awsServiceManager = AWSServiceManager.defaultServiceManager()
+        self.awsServiceManager = AWSServiceManager.default()
 
         let configuration = AWSServiceConfiguration(region: AccountManager.CognitoRegionType, credentialsProvider: self.credentialProvider)
         self.awsServiceManager.defaultServiceConfiguration = configuration
 
-        self.syncClient = AWSCognito.defaultCognito()
+        self.syncClient = AWSCognito.default()
 
         self.restoreSessions()
     }
@@ -87,7 +87,7 @@ final class AccountManager {
     }
 
     var user: User?
-    private var cognitoID: String? {
+    fileprivate var cognitoID: String? {
         didSet {
             user?.cognitoID = cognitoID
             authenticatedAPI = cognitoID.map(AuthenticatedFurniAPI.init)
@@ -102,7 +102,7 @@ final class AccountManager {
         }
     }
 
-    func authenticateWithService(service: Service, completion: (success: Bool) -> ()) {
+    func authenticateWithService(_ service: Service, completion: @escaping (_ success: Bool) -> ()) {
         switch service {
             case .Twitter: self.authenticateWithTwitter(completion: completion)
             case .Digits: self.authenticateWithDigits(completion: completion)
@@ -112,12 +112,12 @@ final class AccountManager {
     var hasUploadedContacts: Bool = false
 
     // Upload the Address Book contacts. This requires a Digits session.
-    func uploadContacts(completion: Bool -> ()) {
+    func uploadContacts(_ completion: @escaping (Bool) -> ()) {
         let contacts = DGTContacts(userSession: self.digitsIdentity!)
 
         // Start the contacts upload. The first time, Digits will display a modal UI
         // requesting permission to upload the user’s Address Book.
-        contacts.startContactsUploadWithDigitsAppearance(DGTAppearance.furniAppearance, presenterViewController: nil, title: nil) { result, error in
+        contacts?.startUpload(withDigitsAppearance: DGTAppearance.furniAppearance, presenterViewController: nil, title: nil) { result, error in
             // Inspect results and error objects to determine if upload succeeded.
             guard let result = result else {
                 print("Error getting friends: \(error)")
@@ -131,7 +131,7 @@ final class AccountManager {
             // Note: For this demo app, we only make one request,
             // since we know the number of friends will be small.
             // A production app should batch the requests using nextCursor.
-            contacts.lookupContactMatchesWithCursor(nil) { matches, nextCursor, error in
+            contacts?.lookupContactMatches(withCursor: nil) { matches, nextCursor, error in
                 guard let matches = matches as? [DGTUser] else {
                     print("Error looking up contacts: \(error)")
                     completion(false)
@@ -160,58 +160,60 @@ final class AccountManager {
 
     // MARK: Private
 
-    private var sessions: [Service : TWTRAuthSession] = [:] {
+    fileprivate var sessions: [Service : TWTRAuthSession] = [:] {
         didSet {
             self.updateCognitoID()
         }
     }
 
     // Both Twitter and Digits session conform to the `TWTRAuthSession` protocol.
-    private func updateSessionOfService(service: Service, withSession session: TWTRAuthSession?) {
+    fileprivate func updateSessionOfService(_ service: Service, withSession session: TWTRAuthSession?) {
         if let session = session {
             self.sessions[service] = session
         } else {
-            self.sessions.removeValueForKey(service)
+            self.sessions.removeValue(forKey: service)
         }
     }
 
-    private static let CognitoDataSetName = "dataset"
-    private func storeSessionDataInCognitoWithProperties(properties: [String : String]) {
+    fileprivate static let CognitoDataSetName = "dataset"
+    fileprivate func storeSessionDataInCognitoWithProperties(_ properties: [String : String]) {
         // Save extra information in the dataset.
         let dataset = self.syncClient.openOrCreateDataset(AccountManager.CognitoDataSetName)
         properties.forEach { key, value in
-            dataset.setString(value, forKey: key)
+            dataset?.setString(value, forKey: key)
         }
 
         // Synchronize the dataset.
-        dataset.synchronize().continueWithBlock { task in
+        dataset?.synchronize().continue({ (task) -> Any? in
             if let error = task.error {
                 print("Error storing credentials: \(error)")
             } else {
                 print("Cognito Sync success")
             }
             return nil
-        }
+        })
     }
 
-    private func updateCognitoID() {
+    fileprivate func updateCognitoID() {
         // Update the logins in the credential provider.
-        self.credentialProvider.logins = sessions.reduce([:]) { (var dictionary, pair) in
-            dictionary[pair.0.rawValue] = "\(pair.1.authToken);\(pair.1.authTokenSecret)"
-            return dictionary
-        }
 
-        // Keep a reference on the Cognito ID.
-        self.credentialProvider.refresh().continueWithBlock() { task in
-            dispatch_async(dispatch_get_main_queue()) {
-                self.cognitoID = self.credentialProvider.identityId
-            }
-
-            return nil
-        }
+        // FIXME
+//        self.credentialProvider.logins = sessions.reduce([:]) { (dictionary, pair) in
+//            dictionary?[pair.0.rawValue] = "\(pair.1.authToken);\(pair.1.authTokenSecret)"
+//            return dictionary
+//        }
+//
+//        // Keep a reference on the Cognito ID.
+//        self.credentialProvider.refresh().continueWithBlock() { task in
+//            dispatch_async(dispatch_get_main_queue()) {
+//                self.cognitoID = self.credentialProvider.identityId
+//            }
+//
+//            return nil
+//        }
     }
 
-    private func restoreSessions() {
+    fileprivate func restoreSessions() {
         
         if let session = Twitter.sharedInstance().sessionStore.session() {
             self.twitterIdentity = session as? TWTRSession
@@ -220,7 +222,7 @@ final class AccountManager {
         self.digitsIdentity = Digits.sharedInstance().session()
     }
 
-    private func updateUser() {
+    fileprivate func updateUser() {
         guard self.isUserLoggedIn else {
             self.user = nil
             return
@@ -243,7 +245,7 @@ final class AccountManager {
     }
 
     // Note: This is a naive implementation for demo purposes.
-    private func updateFavoriteProducts() {
+    fileprivate func updateFavoriteProducts() {
         guard let user = self.user else { return }
         guard user.favorites.isEmpty else { return }
 
@@ -252,12 +254,12 @@ final class AccountManager {
         }
     }
 
-    private func registerUser(completion: Bool -> () = { _ in }) {
+    fileprivate func registerUser(_ completion: @escaping (Bool) -> () = { _ in }) {
         authenticatedAPI?.registerUser(self.digitsIdentity?.userID, digitsPhoneNumber: self.digitsIdentity?.phoneNumber, completion: completion)
     }
 
-    private func authenticateWithTwitter(completion completion: (success: Bool) -> ()) {
-        Twitter.sharedInstance().logInWithCompletion { session, error in
+    fileprivate func authenticateWithTwitter(completion: @escaping (_ success: Bool) -> ()) {
+        Twitter.sharedInstance().logIn { session, error in
             if let session = session {
                 self.twitterIdentity = session
 
@@ -266,22 +268,22 @@ final class AccountManager {
                 Crashlytics.sharedInstance().setUserName(session.userName)
 
                 // Log Twitter Login Event in (success) Answers.
-                Answers.logLoginWithMethod("Twitter", success: true, customAttributes: ["User ID" : session.userID])
+                Answers.logLogin(withMethod: "Twitter", success: true, customAttributes: ["User ID" : session.userID])
 
-                completion(success: true)
+                completion(true)
             } else if let error = error {
                 // Log Twitter Login Event in (failure) Answers.
-                Answers.logLoginWithMethod("Twitter", success: false, customAttributes: ["Error" : error.localizedDescription])
+                Answers.logLogin(withMethod: "Twitter", success: false, customAttributes: ["Error" : error.localizedDescription])
 
-                completion(success: false)
+                completion(false)
             }
         }
     }
 
-    private func authenticateWithDigits(completion completion: (success: Bool) -> ()) {
-        let configuration = DGTAuthenticationConfiguration(accountFields: DGTAccountFields.Email)
-        configuration.appearance = DGTAppearance.furniAppearance
-        Digits.sharedInstance().authenticateWithViewController(nil, configuration: configuration) { session, error in
+    fileprivate func authenticateWithDigits(completion: @escaping (_ success: Bool) -> ()) {
+        let configuration = DGTAuthenticationConfiguration(accountFields: DGTAccountFields.email)
+        configuration?.appearance = DGTAppearance.furniAppearance
+        Digits.sharedInstance().authenticate(with: nil, configuration: configuration!) { session, error in
             if let session = session {
                 self.digitsIdentity = session
 
@@ -289,15 +291,15 @@ final class AccountManager {
                 Crashlytics.sharedInstance().setUserIdentifier(session.userID)
 
                 // Log Digits Login Event (success) in Answers.
-                Answers.logLoginWithMethod("Digits", success: true, customAttributes: ["User ID" : session.userID])
+                Answers.logLogin(withMethod: "Digits", success: true, customAttributes: ["User ID" : session.userID])
 
-                completion(success: true)
+                completion(true)
             }
             else if let error = error {
                 // Log Digits Login Event (failure) in Answers.
-                Answers.logLoginWithMethod("Digits", success: false, customAttributes: ["Error" : error.localizedDescription])
+                Answers.logLogin(withMethod: "Digits", success: false, customAttributes: ["Error" : error.localizedDescription])
 
-                completion(success: false)
+                completion(false)
             }
         }
     }

@@ -25,34 +25,34 @@ final class ProductCell: UICollectionViewCell {
 
     var product: Product!
 
-    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet fileprivate weak var nameLabel: UILabel!
 
-    @IBOutlet private weak var priceLabel: UILabel!
+    @IBOutlet fileprivate weak var priceLabel: UILabel!
 
-    @IBOutlet private weak var retailPriceLabel: UILabel!
+    @IBOutlet fileprivate weak var retailPriceLabel: UILabel!
 
-    @IBOutlet private weak var percentOffLabel: UILabel!
+    @IBOutlet fileprivate weak var percentOffLabel: UILabel!
 
-    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet fileprivate weak var imageView: UIImageView!
 
-    @IBOutlet private weak var favoriteButton: UIButton!
+    @IBOutlet fileprivate weak var favoriteButton: UIButton!
 
-    @IBOutlet private weak var separatorHeightConstraint: NSLayoutConstraint!
+    @IBOutlet fileprivate weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    private var favorited: Bool = false {
+    fileprivate var favorited: Bool = false {
         didSet {
-            favoriteButton.setImage(UIImage.favoriteImageForFavoritedState(favorited), forState: .Normal)
+            favoriteButton.setImage(UIImage.favoriteImageForFavoritedState(favorited), for: UIControlState())
         }
     }
 
     // MARK: IBActions
 
-    @IBAction private func favoriteButtonTapped(sender: AnyObject) {
+    @IBAction fileprivate func favoriteButtonTapped(_ sender: AnyObject) {
         let favorite = !self.favorited
         self.favorited = favorite
 
         let product = self.product
-        AccountManager.defaultAccountManager.authenticatedAPI?.favoriteProduct(favorite, product: product) { success in
+        AccountManager.defaultAccountManager.authenticatedAPI?.favoriteProduct(favorite, product: product!) { success in
             guard product === self.product else { return }
 
             if !success {
@@ -66,7 +66,7 @@ final class ProductCell: UICollectionViewCell {
     override func awakeFromNib() {
         // Draw a border around the cell.
         layer.masksToBounds = false
-        layer.borderColor = UIColor.furniBrownColor().CGColor
+        layer.borderColor = UIColor.furniBrownColor().cgColor
         layer.borderWidth = 0.5
         layer.cornerRadius = 3
         separatorHeightConstraint.constant = 0.5
@@ -79,7 +79,7 @@ final class ProductCell: UICollectionViewCell {
         percentOffLabel.text = nil
     }
 
-    func configureWithProduct(product: Product) {
+    func configureWithProduct(_ product: Product) {
         // Keep a reference on the model.
         self.product = product
 
@@ -88,11 +88,11 @@ final class ProductCell: UICollectionViewCell {
 
         // Load the image from the network and give it the correct aspect ratio.
         let size = CGSize(width: imageView.bounds.width, height: imageView.bounds.height)
-        imageView.af_setImageWithURL(
-            product.imageURL,
+        imageView.af_setImage(
+            withURL: product.imageURL,
             placeholderImage: UIImage(named: "Placeholder"),
             filter: AspectScaledToFillSizeFilter(size: size),
-            imageTransition: .CrossDissolve(0.6)
+            imageTransition: .crossDissolve(0.6)
         )
 
         // Set the favorited state to adjust the icon accordingly.
@@ -102,9 +102,9 @@ final class ProductCell: UICollectionViewCell {
         priceLabel.text = product.price.asCurrency
         if product.price < product.retailPrice && product.percentOff > 0 {
             let retailPriceString = String(product.retailPrice.asCurrency)
-            let attributedRetailPrice = NSMutableAttributedString(string: retailPriceString)
-            attributedRetailPrice.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, retailPriceString.characters.count))
-            attributedRetailPrice.addAttribute(NSStrikethroughColorAttributeName, value: UIColor.furniDarkGrayColor(), range: NSMakeRange(0, retailPriceString.characters.count))
+            let attributedRetailPrice = NSMutableAttributedString(string: retailPriceString!)
+            attributedRetailPrice.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, (retailPriceString?.characters.count)!))
+            attributedRetailPrice.addAttribute(NSStrikethroughColorAttributeName, value: UIColor.furniDarkGrayColor(), range: NSMakeRange(0, (retailPriceString?.characters.count)!))
             retailPriceLabel.attributedText = attributedRetailPrice
             percentOffLabel.text = "-\(product.percentOff)%"
         }

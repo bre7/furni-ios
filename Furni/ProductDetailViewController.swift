@@ -25,31 +25,31 @@ final class ProductDetailViewController: UIViewController {
 
     var product: Product!
 
-    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet fileprivate weak var nameLabel: UILabel!
 
-    @IBOutlet private weak var priceLabel: UILabel!
+    @IBOutlet fileprivate weak var priceLabel: UILabel!
 
-    @IBOutlet private weak var retailPriceLabel: UILabel!
+    @IBOutlet fileprivate weak var retailPriceLabel: UILabel!
 
-    @IBOutlet private weak var percentOffLabel: UILabel!
+    @IBOutlet fileprivate weak var percentOffLabel: UILabel!
 
-    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet fileprivate weak var imageView: UIImageView!
 
-    @IBOutlet private weak var descriptionLabel: UILabel!
+    @IBOutlet fileprivate weak var descriptionLabel: UILabel!
 
-    @IBOutlet private weak var addToCartButton: UIButton!
+    @IBOutlet fileprivate weak var addToCartButton: UIButton!
 
-    @IBOutlet private weak var favoriteButton: UIButton!
+    @IBOutlet fileprivate weak var favoriteButton: UIButton!
 
-    private var favorited: Bool = false {
+    fileprivate var favorited: Bool = false {
         didSet {
-            favoriteButton.setImage(UIImage.favoriteImageForFavoritedState(favorited), forState: .Normal)
+            favoriteButton.setImage(UIImage.favoriteImageForFavoritedState(favorited), for: UIControlState())
         }
     }
 
     // MARK: IBActions
 
-    @IBAction private func favoriteButtonTapped(sender: AnyObject) {
+    @IBAction fileprivate func favoriteButtonTapped(_ sender: AnyObject) {
         let favorite = !self.favorited
         self.favorited = favorite
 
@@ -63,27 +63,27 @@ final class ProductDetailViewController: UIViewController {
         }
     }
 
-    @IBAction private func addToCartButtonTapped(sender: AnyObject) {
+    @IBAction fileprivate func addToCartButtonTapped(_ sender: AnyObject) {
         Cart.sharedInstance.addProduct(product)
     }
 
-    @objc private func shareButtonTapped() {
+    @objc fileprivate func shareButtonTapped() {
         // Use the TwitterKit to create a Tweet composer.
         let composer = TWTRComposer()
 
         // Prepare the Tweet with an image and a URL.
         composer.setText("Check out this amazing product I found on @furni!")
         composer.setImage(imageView.image)
-        composer.setURL(product.productURL)
+        composer.setURL(product.productURL as URL)
 
         // Present the composer to the user.
-        composer.showFromViewController(self) { result in
-            if result == .Done {
+        composer.show(from: self) { result in
+            if result == .done {
                 // Log Custom Event in Answers.
-                Answers.logCustomEventWithName("Tweet Completed", customAttributes: nil)
-            } else if result == .Cancelled {
+                Answers.logCustomEvent(withName: "Tweet Completed", customAttributes: nil)
+            } else if result == .cancelled {
                 // Log Custom Event in Answers.
-                Answers.logCustomEventWithName("Tweet Cancelled", customAttributes: nil)
+                Answers.logCustomEvent(withName: "Tweet Cancelled", customAttributes: nil)
             }
         }
     }
@@ -94,7 +94,7 @@ final class ProductDetailViewController: UIViewController {
         super.viewDidLoad()
 
         // Customize the navigation bar.
-        let shareButton = UIBarButtonItem(title: "Share", style: .Plain, target: self, action: #selector(ProductDetailViewController.shareButtonTapped))
+        let shareButton = UIBarButtonItem(title: "Share", style: .plain, target: self, action: #selector(ProductDetailViewController.shareButtonTapped))
         navigationItem.rightBarButtonItem = shareButton
         navigationItem.title = "Details"
 
@@ -108,20 +108,20 @@ final class ProductDetailViewController: UIViewController {
         percentOffLabel.text = nil
         if product.price < product.retailPrice && product.percentOff > 0 {
             let retailPriceString = String(product.retailPrice.asCurrency)
-            let attributedRetailPrice = NSMutableAttributedString(string: retailPriceString)
-            attributedRetailPrice.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, retailPriceString.characters.count))
-            attributedRetailPrice.addAttribute(NSStrikethroughColorAttributeName, value: UIColor.furniDarkGrayColor(), range: NSMakeRange(0, retailPriceString.characters.count))
+            let attributedRetailPrice = NSMutableAttributedString(string: retailPriceString!)
+            attributedRetailPrice.addAttribute(NSStrikethroughStyleAttributeName, value: 1, range: NSMakeRange(0, (retailPriceString?.characters.count)!))
+            attributedRetailPrice.addAttribute(NSStrikethroughColorAttributeName, value: UIColor.furniDarkGrayColor(), range: NSMakeRange(0, (retailPriceString?.characters.count)!))
             retailPriceLabel.attributedText = attributedRetailPrice
             percentOffLabel.text = "-\(product.percentOff)%"
         }
 
         // Load the image from the network and give it the correct aspect ratio.
         let size = CGSize(width: imageView.bounds.width, height: imageView.bounds.height)
-        imageView.af_setImageWithURL(
-            product.imageURL,
+        imageView.af_setImage(
+            withURL: product.imageURL,
             placeholderImage: UIImage(named: "Placeholder"),
             filter: AspectScaledToFitSizeFilter(size: size),
-            imageTransition: .CrossDissolve(0.6)
+            imageTransition: .crossDissolve(0.6)
         )
 
         // Set the icon if the product has been favorited.
@@ -129,8 +129,8 @@ final class ProductDetailViewController: UIViewController {
 
         // Draw a border around the product image and put a white background.
         imageView.layer.masksToBounds = false
-        imageView.layer.backgroundColor = UIColor.whiteColor().CGColor
-        imageView.layer.borderColor = UIColor.furniBrownColor().CGColor
+        imageView.layer.backgroundColor = UIColor.white.cgColor
+        imageView.layer.borderColor = UIColor.furniBrownColor().cgColor
         imageView.layer.borderWidth = 0.5
         imageView.layer.cornerRadius = 3
 
@@ -138,14 +138,14 @@ final class ProductDetailViewController: UIViewController {
         addToCartButton.decorateForFurni()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Tie this selected product to any crashes in Crashlytics.
         Crashlytics.sharedInstance().setObjectValue(product.id, forKey: "Product")
 
         // Log Content View Event in Answers.
-        Answers.logContentViewWithName(product.name,
+        Answers.logContentView(withName: product.name,
             contentType: "Product",
             contentId: String(product.id),
             customAttributes: nil

@@ -24,13 +24,13 @@ final class FriendFooterView: UICollectionReusableView {
 
     static let height: CGFloat = 200
 
-    @IBOutlet private weak var findFriendsButton: UIButton!
+    @IBOutlet fileprivate weak var findFriendsButton: UIButton!
 
     // MARK: IBActions
 
     var findFriendsCallback: (() -> ())!
 
-    @IBAction private func findFriendsButtonTapped() {
+    @IBAction fileprivate func findFriendsButtonTapped() {
         self.findFriendsCallback()
     }
 
@@ -43,7 +43,7 @@ final class FriendFooterView: UICollectionReusableView {
         self.findFriendsButton.decorateForFurni()
 
         // Add a Digits custom image to the button with the proper rendering mode.
-        findFriendsButton.setImage(UIImage(named: "Digits")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+        findFriendsButton.setImage(UIImage(named: "Digits")?.withRenderingMode(.alwaysTemplate), for: UIControlState())
 
         // Draw a border layer at the top.
         self.drawTopBorderWithColor(UIColor.furniBrownColor(), height: 0.5)

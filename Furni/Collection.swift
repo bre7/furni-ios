@@ -22,13 +22,13 @@ class Collection {
     let name: String
     let tagline: String
     let description: String
-    let collectionURL: NSURL
-    let imageURL: NSURL
-    let largeImageURL: NSURL
-    let date: NSDate?
+    let collectionURL: URL
+    let imageURL: URL
+    let largeImageURL: URL
+    let date: Date?
     var products: [Product] = []
 
-    init(id: Int, permalink: String, name: String, tagline: String, description: String, collectionURL: NSURL, imageURL: NSURL, largeImageURL: NSURL) {
+    init(id: Int, permalink: String, name: String, tagline: String, description: String, collectionURL: URL, imageURL: URL, largeImageURL: URL) {
         self.id = id
         self.permalink = permalink
         self.name = name
@@ -37,7 +37,7 @@ class Collection {
         self.collectionURL = collectionURL
         self.imageURL = imageURL
         self.largeImageURL = largeImageURL
-        self.date = NSDate()
+        self.date = Date()
     }
 
     init(dictionary: [String : AnyObject]) {
@@ -49,19 +49,19 @@ class Collection {
         name = dictionary["name"] as! String
         tagline = dictionary["tagline"] as! String
         description = dictionary["description"] as! String
-        collectionURL = NSURL(string: (dictionary["url"] as! String!))!
+        collectionURL = URL(string: (dictionary["url"] as! String!))!
 
-        let imageURLComponents = NSURLComponents(string: dictionary["home_page_image_url"] as! String)!
+        var imageURLComponents = URLComponents(string: dictionary["home_page_image_url"] as! String)!
         imageURLComponents.scheme = "https"
-        imageURL = imageURLComponents.URL!
+        imageURL = imageURLComponents.url!
 
-        let largeImageURLComponents = NSURLComponents(string: dictionary["image_url"] as! String)!
+        var largeImageURLComponents = URLComponents(string: dictionary["image_url"] as! String)!
         largeImageURLComponents.scheme = "https"
-        largeImageURL = largeImageURLComponents.URL!
+        largeImageURL = largeImageURLComponents.url!
 
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let dateString = dictionary["sale_starts"] as! String
-        date = dateFormatter.dateFromString(dateString)!
+        date = dateFormatter.date(from: dateString)!
     }
 }

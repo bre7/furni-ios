@@ -28,6 +28,6 @@ final class TwitterTimelineViewController: TWTRTimelineViewController {
         tweetViewAppearance.linkTextColor = UIColor.furniOrangeColor()
 
         // Data source for a collection of Tweets related to Furni and home furnishing trends.
-        self.dataSource = TWTRCollectionTimelineDataSource(collectionID: "654736881075093504", APIClient: TWTRAPIClient())
+        self.dataSource = TWTRCollectionTimelineDataSource(collectionID: "654736881075093504", apiClient: TWTRAPIClient())
     }
 }

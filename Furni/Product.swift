@@ -25,10 +25,10 @@ class Product {
     let retailPrice: Float
     let percentOff: Int
     let currency: String
-    let productURL: NSURL
-    let imageURL: NSURL
+    let productURL: URL
+    let imageURL: URL
 
-    init(id: Int, collectionPermalink: String, name: String, description: String, price: Float, retailPrice: Float, percentOff: Int, currency: String, productURL: NSURL, imageURL: NSURL) {
+    init(id: Int, collectionPermalink: String, name: String, description: String, price: Float, retailPrice: Float, percentOff: Int, currency: String, productURL: URL, imageURL: URL) {
         self.id = id
         self.collectionPermalink = collectionPermalink
         self.name = name
@@ -47,8 +47,8 @@ class Product {
 
         id = dictionary["id"] as! Int
         collectionPermalink = permalink
-        name = (dictionary["name"] as! String).stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-        description = (dictionary["description"] as! String).stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        name = (dictionary["name"] as! String).trimmingCharacters(in: CharacterSet.whitespaces)
+        description = (dictionary["description"] as! String).trimmingCharacters(in: CharacterSet.whitespaces)
         price = (dictionary["price"] as! NSString).floatValue
         retailPrice = (dictionary["retail_price"] as! NSString).floatValue
         if let _ = dictionary["percentoff"] as? Int {
@@ -57,11 +57,11 @@ class Product {
             percentOff = 0
         }
         currency = "USD"
-        productURL = NSURL(string: (dictionary["url"] as! String!))!
+        productURL = URL(string: (dictionary["url"] as! String!))!
 
         // Save the image URL and make sure it is HTTPS.
-        let imageURLComponents = NSURLComponents(string: dictionary["image_url"] as! String)!
+        var imageURLComponents = URLComponents(string: dictionary["image_url"] as! String)!
         imageURLComponents.scheme = "https"
-        imageURL = imageURLComponents.URL!
+        imageURL = imageURLComponents.url!
     }
 }

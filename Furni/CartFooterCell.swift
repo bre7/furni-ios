@@ -22,15 +22,15 @@ final class CartFooterCell: UITableViewCell {
 
     // MARK: Properties
 
-    @IBOutlet private weak var totalItemsLabel: UILabel!
+    @IBOutlet fileprivate weak var totalItemsLabel: UILabel!
 
-    @IBOutlet private weak var subtotalPriceLabel: UILabel!
+    @IBOutlet fileprivate weak var subtotalPriceLabel: UILabel!
 
-    @IBOutlet private weak var shippingPriceLabel: UILabel!
+    @IBOutlet fileprivate weak var shippingPriceLabel: UILabel!
 
-    @IBOutlet private weak var totalPriceLabel: UILabel!
+    @IBOutlet fileprivate weak var totalPriceLabel: UILabel!
 
-    @IBOutlet private weak var payButton: UIButton!
+    @IBOutlet fileprivate weak var payButton: UIButton!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -39,7 +39,7 @@ final class CartFooterCell: UITableViewCell {
         self.contentView.drawTopBorderWithColor(UIColor.furniBrownColor(), height: 0.5)
     }
 
-    func configureWithCart(cart: Cart) {
+    func configureWithCart(_ cart: Cart) {
         // Assign the labels.
         totalItemsLabel.text = "\(cart.productCount()) Items"
         subtotalPriceLabel.text = cart.subtotalAmount().asCurrency

@@ -20,22 +20,27 @@ final class AccountViewController: UIViewController {
 
     // MARK: Properties
 
-    @IBOutlet private weak var pictureImageView: UIImageView!
+    @IBOutlet fileprivate weak var pictureImageView: UIImageView!
 
-    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet fileprivate weak var nameLabel: UILabel!
 
-    @IBOutlet private weak var signOutButton: UIButton!
+    @IBOutlet fileprivate weak var signOutButton: UIButton!
 
     // MARK: IBActions
 
-    @IBAction private func signOutButtonTapped(sender: AnyObject) {
+    @IBAction fileprivate func signOutButtonTapped(_ sender: AnyObject) {
         AccountManager.defaultAccountManager.signOut()
 
         SignInViewController.presentSignInViewController() { _ in }
     }
 
-    @IBAction private func learnMoreButtonTapped(sender: AnyObject) {
-        UIApplication.sharedApplication().openURL(NSURL(string: "http://furni.xyz")!)
+    @IBAction fileprivate func learnMoreButtonTapped(_ sender: AnyObject) {
+        let url = URL(string: "http://furni.xyz")!
+        if #available(iOS 10, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
+        }
     }
 
     // MARK: View Life Cycle
@@ -54,7 +59,7 @@ final class AccountViewController: UIViewController {
         pictureImageView.layer.masksToBounds = true
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Assign the user name and image.

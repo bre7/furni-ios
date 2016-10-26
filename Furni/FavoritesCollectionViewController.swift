@@ -41,10 +41,10 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
 
         // Setup the refresh control.
         refreshControl = UIRefreshControl()
-        refreshControl!.addTarget(self, action: #selector(FavoritesCollectionViewController.fetchFavoriteProducts), forControlEvents: .ValueChanged)
+        refreshControl!.addTarget(self, action: #selector(FavoritesCollectionViewController.fetchFavoriteProducts), for: .valueChanged)
         collectionView!.addSubview(refreshControl!)
 
-        collectionView!.registerClass(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: FavoritesCollectionViewController.emptyFooterReusableID)
+        collectionView!.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: FavoritesCollectionViewController.emptyFooterReusableID)
 
         collectionView!.delegate = self
 
@@ -52,7 +52,7 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
         fetchFavoriteProducts()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         AccountManager.defaultAccountManager.user?.populateWithLocalContact()
@@ -61,19 +61,19 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
 
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return friends.count
     }
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return friends[section].favorites.count
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        return collectionView.dequeueReusableCellWithReuseIdentifier(ProductCell.reuseIdentifier, forIndexPath: indexPath)
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        return collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.reuseIdentifier, for: indexPath)
     }
 
-    override func collectionView(collectionView: UICollectionView, willDisplayCell cell: UICollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath) {
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         let cell = cell as! ProductCell
 
         // Find the corresponding product.
@@ -83,17 +83,17 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
         cell.configureWithProduct(product)
     }
 
-    private func shouldDisplayFindFriendsFooter() -> Bool {
+    fileprivate func shouldDisplayFindFriendsFooter() -> Bool {
         // return AccountManager.defaultAccountManager.digitsIdentity != nil && friends.count < 2
         // Note: For the demo, always suggest to find friends the first time.
         return !AccountManager.defaultAccountManager.hasUploadedContacts
     }
 
-    override func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
             case UICollectionElementKindSectionHeader:
                 // Dequeue the friend header view.
-                let friendHeaderView = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionHeader, withReuseIdentifier: FriendHeaderView.reuseIdentifier, forIndexPath: indexPath) as! FriendHeaderView
+                let friendHeaderView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: FriendHeaderView.reuseIdentifier, for: indexPath) as! FriendHeaderView
 
                 // Find the corresponding user.
                 let user = friends[indexPath.section]
@@ -111,10 +111,10 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
                 // Return the header view.
                 return friendHeaderView
             case UICollectionElementKindSectionFooter:
-                let isLastSection = indexPath.section == numberOfSectionsInCollectionView(collectionView) - 1
+                let isLastSection = indexPath.section == numberOfSections(in: collectionView) - 1
                 if isLastSection && shouldDisplayFindFriendsFooter() {
                     // Dequeue the find friends footer view.
-                    let friendFooterView = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionFooter, withReuseIdentifier: FriendFooterView.reuseIdentifier, forIndexPath: indexPath) as! FriendFooterView
+                    let friendFooterView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionFooter, withReuseIdentifier: FriendFooterView.reuseIdentifier, for: indexPath) as! FriendFooterView
 
                     // Handle the button callback.
                     friendFooterView.findFriendsCallback = { [unowned self] in
@@ -125,8 +125,8 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
                     return friendFooterView
                 } else {
                     // Return an empty footer view.
-                    let footer = collectionView.dequeueReusableSupplementaryViewOfKind(UICollectionElementKindSectionFooter, withReuseIdentifier: FavoritesCollectionViewController.emptyFooterReusableID, forIndexPath: indexPath)
-                    footer.frame = CGRectZero
+                    let footer = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionFooter, withReuseIdentifier: FavoritesCollectionViewController.emptyFooterReusableID, for: indexPath)
+                    footer.frame = CGRect.zero
                     return footer
                 }
             default: ()
@@ -137,14 +137,14 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
 
     // MARK: UICollectionViewDelegateFlowLayout
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let spacing = (collectionView.collectionViewLayout as! UICollectionViewFlowLayout).sectionInset.left
         let width = (view.bounds.width - 3 * spacing) / 2
         return CGSize(width: width, height: width + 50)
     }
 
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let isFindFriendsSection = (section == numberOfSectionsInCollectionView(collectionView) - 1) && shouldDisplayFindFriendsFooter()
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        let isFindFriendsSection = (section == numberOfSections(in: collectionView) - 1) && shouldDisplayFindFriendsFooter()
 
         let height: CGFloat
         if isFindFriendsSection {
@@ -158,34 +158,34 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
 
     // MARK: UIStoryboardSegue Handling
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let productCell = sender as! ProductCell
 
         // Pass the selected product to the detail view controller.
-        let productDetailViewController = segue.destinationViewController as! ProductDetailViewController
+        let productDetailViewController = segue.destination as! ProductDetailViewController
         productDetailViewController.product = productCell.product
     }
 
-    private func uploadContactsToSearchForFriends() {
+    fileprivate func uploadContactsToSearchForFriends() {
         AccountManager.defaultAccountManager.uploadContacts() { _ in
             self.fetchFavoriteProducts()
         }
     }
 
-    private func displayErrorAlertWithTitle(title: String, message: String) {
+    fileprivate func displayErrorAlertWithTitle(_ title: String, message: String) {
         let alert = UIAlertController(
             title: title,
             message: message,
-            preferredStyle: .Alert
+            preferredStyle: .alert
         )
-        let action = UIAlertAction(title: "OK", style: .Default, handler: nil)
+        let action = UIAlertAction(title: "OK", style: .default, handler: nil)
         alert.addAction(action)
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
 
     // MARK: MFMessageComposeViewControllerDelegate
 
-    private func sendMessageToFriend(friend: User) {
+    fileprivate func sendMessageToFriend(_ friend: User) {
         guard MFMessageComposeViewController.canSendText() else {
             displayErrorAlertWithTitle("Cannot Send Message.", message: "Sorry, your device is not able to send messages.")
             return
@@ -200,11 +200,11 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
         messageComposerViewController.messageComposeDelegate = self
         messageComposerViewController.recipients = [phoneNumber]
         messageComposerViewController.body = "Hey, just exploring the products you favorited on Furni!"
-        presentViewController(messageComposerViewController, animated: true, completion: nil)
+        present(messageComposerViewController, animated: true, completion: nil)
     }
 
-    func messageComposeViewController(controller: MFMessageComposeViewController, didFinishWithResult result: MessageComposeResult) {
-        controller.dismissViewControllerAnimated(true, completion: nil)
+    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        controller.dismiss(animated: true, completion: nil)
     }
 
     // MARK: API
@@ -220,7 +220,7 @@ class FavoritesCollectionViewController: UICollectionViewController, UICollectio
             // For this demo app, only append friends once the Address Book has been uploaded.
             // if CNContactStore.authorizationStatusForEntityType(.Contacts) == .Authorized {
             if AccountManager.defaultAccountManager.hasUploadedContacts {
-                self.friends.appendContentsOf(friends ?? [])
+                self.friends.append(contentsOf: friends ?? [])
             }
 
             self.refreshControl!.endRefreshing()

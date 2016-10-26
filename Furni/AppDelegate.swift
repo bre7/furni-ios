@@ -25,7 +25,7 @@ import AWSCognito
 
 let storeLayoutCodeBlock = OptimizelyCodeBlocksKey("StoreLayout", blockNames: ["BasicStoreLayout", "RichStoreLayout"])
 
-let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegate {
@@ -36,16 +36,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
         return self.window!.rootViewController as! UITabBarController
     }
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Developers: Welcome! Get started with Fabric.app.
         let welcome = "Welcome to Furni! Please onboard with the Fabric Mac app. Check the instructions in the README file."
-        precondition(NSBundle.mainBundle().objectForInfoDictionaryKey("Fabric") != nil, welcome)
+        precondition(Bundle.main.object(forInfoDictionaryKey: "Fabric") != nil, welcome)
 
         // Register Fabric Kits.
         Fabric.with([Crashlytics.self, Twitter.self, Digits.self, Optimizely.self, STPAPIClient.self])
 
         // Setup Optimizely.
-        Optimizely.startOptimizelyWithAPIToken("Your Optimizely API Token", launchOptions:launchOptions)
+        Optimizely.start(withAPIToken: "Your Optimizely API Token", launchOptions:launchOptions)
         Optimizely.preregisterBlockKey(storeLayoutCodeBlock)
 
         // Setup the account manager.
@@ -56,22 +56,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
 
         // Customize the navigation bar.
         UINavigationBar.appearance().shadowImage = UIImage()
-        UINavigationBar.appearance().setBackgroundImage(UIImage(), forBarMetrics: .Default)
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
 
         self.tabBarController.delegate = self
 
         return true
     }
 
-    func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
-        return Optimizely.handleOpenURL(url)
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+        return Optimizely.handleOpen(url)
     }
 
     // MARK: UITabBarControllerDelegate
 
-    private static let viewControllerClassesThatRequireUserSession: [AnyObject.Type] = [FavoritesCollectionViewController.self, CartViewController.self, AccountViewController.self]
+    fileprivate static let viewControllerClassesThatRequireUserSession: [AnyObject.Type] = [FavoritesCollectionViewController.self, CartViewController.self, AccountViewController.self]
 
-    func tabBarController(tabBarController: UITabBarController, shouldSelectViewController viewController: UIViewController) -> Bool {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
         guard !AccountManager.defaultAccountManager.isUserLoggedIn else {
             return true
         }
@@ -84,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UITabBarControllerDelegat
             visibleController = viewController
         }
 
-        let shouldPresentSignInScreen = AppDelegate.viewControllerClassesThatRequireUserSession.contains { $0 == visibleController.dynamicType }
+        let shouldPresentSignInScreen = AppDelegate.viewControllerClassesThatRequireUserSession.contains { $0 == type(of: visibleController) }
 
         if shouldPresentSignInScreen {
             SignInViewController.presentSignInViewController() { success in

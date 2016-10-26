@@ -23,25 +23,25 @@ final class CollectionPreviewCell: UITableViewCell, CollectionTableViewCellType 
 
     // MARK: Properties
 
-    @IBOutlet private weak var taglineLabel: UILabel!
+    @IBOutlet fileprivate weak var taglineLabel: UILabel!
 
-    @IBOutlet private weak var artworkImageView: UIImageView!
+    @IBOutlet fileprivate weak var artworkImageView: UIImageView!
 
-    @IBOutlet private var collectionView: ProductPreviewCollectionView!
+    @IBOutlet fileprivate var collectionView: ProductPreviewCollectionView!
 
     // MARK: View Life Cycle
 
-    func configureWithCollection(collection: Collection) {
+    func configureWithCollection(_ collection: Collection) {
         // Assign the collection name and tagline.
         taglineLabel.text = collection.tagline
 
         // Load the image from the network and give it the correct aspect ratio.
         let size = CGSize(width: self.bounds.width, height: self.bounds.width * 9/20)
-        artworkImageView.af_setImageWithURL(
-            collection.imageURL,
+        artworkImageView.af_setImage(
+            withURL: collection.imageURL,
             placeholderImage: UIImage(named: "Placeholder"),
             filter: AspectScaledToFillSizeFilter(size: size),
-            imageTransition: .CrossDissolve(0.6)
+            imageTransition: .crossDissolve(0.6)
         )
 
         collectionView.configureWithCollection(collection)

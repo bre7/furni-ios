@@ -23,25 +23,25 @@ final class CartItemCell: UITableViewCell {
 
     var cartItemQuantityChangedCallback: (() -> ())!
 
-    private weak var cartItem: CartItem!
+    fileprivate weak var cartItem: CartItem!
 
     // MARK: Properties
 
-    @IBOutlet private weak var nameLabel: UILabel!
+    @IBOutlet fileprivate weak var nameLabel: UILabel!
 
-    @IBOutlet private weak var priceLabel: UILabel!
+    @IBOutlet fileprivate weak var priceLabel: UILabel!
 
-    @IBOutlet private weak var quantityLabel: UILabel!
+    @IBOutlet fileprivate weak var quantityLabel: UILabel!
 
-    @IBOutlet private weak var quantityStepper: UIStepper!
+    @IBOutlet fileprivate weak var quantityStepper: UIStepper!
 
-    @IBOutlet private weak var availabilityLabel: UILabel!
+    @IBOutlet fileprivate weak var availabilityLabel: UILabel!
 
-    @IBOutlet private weak var productImageView: UIImageView!
+    @IBOutlet fileprivate weak var productImageView: UIImageView!
 
     // MARK: IBActions
 
-    @IBAction private func quantityStepperValueChanged(sender: UIStepper) {
+    @IBAction fileprivate func quantityStepperValueChanged(_ sender: UIStepper) {
         let value = Int(sender.value)
         cartItem!.quantity = value
         quantityLabel.text = "Quantity: \(value)"
@@ -50,13 +50,13 @@ final class CartItemCell: UITableViewCell {
 
     override func awakeFromNib() {
         // Resize the stepper.
-        quantityStepper.transform = CGAffineTransformMakeScale(0.8, 0.8)
+        quantityStepper.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
 
         // Draw a border layer at the top.
         self.drawTopBorderWithColor(UIColor.furniBrownColor(), height: 0.5)
     }
 
-    func configureWithCartItem(cartItem: CartItem) {
+    func configureWithCartItem(_ cartItem: CartItem) {
         self.cartItem = cartItem
 
         // Assign the labels.
@@ -67,6 +67,6 @@ final class CartItemCell: UITableViewCell {
         quantityStepper.value = Double(cartItem.quantity)
 
         // Load the image from the network and give it the correct aspect ratio.
-        productImageView.af_setImageWithURL(cartItem.product.imageURL)
+        productImageView.af_setImage(withURL: cartItem.product.imageURL)
     }
 }

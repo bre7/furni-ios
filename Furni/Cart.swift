@@ -44,7 +44,7 @@ final class Cart {
     }
 
     func subtotalAmount() -> Float {
-        return items.map { $0.price }.reduce(0, combine: +)
+        return items.map { $0.price }.reduce(0, +)
     }
 
     func shippingAmount() -> Float {
@@ -55,7 +55,7 @@ final class Cart {
         return subtotalAmount() + shippingAmount()
     }
 
-    func addProduct(product: Product) {
+    func addProduct(_ product: Product) {
         // Check if the product is already part of the cart.
         let existingCartItem = items.filter { $0.product.id == product.id }.first
 
@@ -70,7 +70,7 @@ final class Cart {
         postCartUpdatedNotification()
 
         // Log Cart Event in Answers.
-        Answers.logAddToCartWithPrice(NSDecimalNumber(float: product.price),
+        Answers.logAddToCart(withPrice: NSDecimalNumber(value: product.price as Float),
             currency: "USD",
             itemName: product.name,
             itemType: "Furni",
@@ -79,7 +79,7 @@ final class Cart {
         )
     }
 
-    func removeProduct(product: Product) {
+    func removeProduct(_ product: Product) {
         items = items.filter { $0.product.id != product.id }
     }
 
@@ -91,7 +91,7 @@ final class Cart {
         items = []
     }
 
-    private func postCartUpdatedNotification() {
-        NSNotificationCenter.defaultCenter().postNotificationName(Cart.cartUpdatedNotificationName, object: self)
+    fileprivate func postCartUpdatedNotification() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: Cart.cartUpdatedNotificationName), object: self)
     }
 }

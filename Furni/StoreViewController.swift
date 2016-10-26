@@ -20,35 +20,35 @@ import Optimizely
 
 final class StoreViewController: UIViewController, UITableViewDelegate {
 
-    private enum StoreLayout {
-        case Basic
-        case Rich
+    fileprivate enum StoreLayout {
+        case basic
+        case rich
     }
 
     // MARK: Properties
 
-    @IBOutlet private var tableView: UITableView!
+    @IBOutlet fileprivate var tableView: UITableView!
 
-    private let tableViewSectionHeaderHeight: CGFloat = 0.1
-    private let tableViewSectionFooterHeight: CGFloat = 20
+    fileprivate let tableViewSectionHeaderHeight: CGFloat = 0.1
+    fileprivate let tableViewSectionFooterHeight: CGFloat = 20
 
-    private lazy var refreshControl = UIRefreshControl()
+    fileprivate lazy var refreshControl = UIRefreshControl()
 
-    private let collectionTableViewDataSource = CollectionTableViewDataSource<CollectionCell>()
-    private let collectionPreviewTableViewDataSource = CollectionTableViewDataSource<CollectionPreviewCell>()
+    fileprivate let collectionTableViewDataSource = CollectionTableViewDataSource<CollectionCell>()
+    fileprivate let collectionPreviewTableViewDataSource = CollectionTableViewDataSource<CollectionPreviewCell>()
 
-    private var dataSource: UITableViewDataSource? {
+    fileprivate var dataSource: UITableViewDataSource? {
         didSet {
             self.tableView.dataSource = dataSource
             self.tableView.reloadData()
         }
     }
 
-    private var storeLayout: StoreLayout = .Basic {
+    fileprivate var storeLayout: StoreLayout = .basic {
         didSet {
             switch storeLayout {
-            case .Basic: self.dataSource = collectionTableViewDataSource
-            case .Rich: self.dataSource = collectionPreviewTableViewDataSource
+            case .basic: self.dataSource = collectionTableViewDataSource
+            case .rich: self.dataSource = collectionPreviewTableViewDataSource
             }
         }
     }
@@ -68,60 +68,60 @@ final class StoreViewController: UIViewController, UITableViewDelegate {
 
         // Setup the refresh control.
         tableView.addSubview(refreshControl)
-        refreshControl.addTarget(self, action: #selector(StoreViewController.fetchCollections), forControlEvents: .ValueChanged)
+        refreshControl.addTarget(self, action: #selector(StoreViewController.fetchCollections), for: .valueChanged)
 
         // Fetch collections from the API.
         fetchCollections()
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // Setup A/B testing with Optimizely to switch layout based on a code block.
-        Optimizely.codeBlocksWithKey(storeLayoutCodeBlock,
-            blockOne: { [weak self] in self?.storeLayout = .Basic },
-            blockTwo: { [weak self] in self?.storeLayout = .Rich },
-            defaultBlock: { [weak self] in self?.storeLayout = .Basic }
+        Optimizely.codeBlocks(with: storeLayoutCodeBlock,
+            blockOne: { [weak self] in self?.storeLayout = .basic },
+            blockTwo: { [weak self] in self?.storeLayout = .rich },
+            defaultBlock: { [weak self] in self?.storeLayout = .basic }
         )
     }
 
     // MARK: UITableViewDelegate
 
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return self.cellHeightForLayout(self.storeLayout)
     }
 
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return tableViewSectionHeaderHeight
     }
 
-    func tableView(tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return tableViewSectionFooterHeight
     }
 
     // MARK: UIStoryboardSegue Handling
 
-    private func collectionAtIndexPath(indexPath: NSIndexPath) -> Collection {
+    fileprivate func collectionAtIndexPath(_ indexPath: IndexPath) -> Collection {
         return self.collections[indexPath.section]
     }
 
-    private enum Segue: String {
+    fileprivate enum Segue: String {
         case ViewCollectionBasicLayout = "ViewCollectionBasicLayoutSegue"
         case ViewCollectionRichLayout = "ViewCollectionRichLayoutSegue"
         case ViewProduct = "ViewProductSegue"
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier! {
         case Segue.ViewCollectionBasicLayout.rawValue, Segue.ViewCollectionRichLayout.rawValue:
             let indexPath = tableView.indexPathForSelectedRow!
             let collection = collectionAtIndexPath(indexPath)
 
-            let productCollectionViewController = segue.destinationViewController as! ProductCollectionViewController
+            let productCollectionViewController = segue.destination as! ProductCollectionViewController
             productCollectionViewController.collection = collection
 
             // Log Content View Event in Answers.
-            Answers.logContentViewWithName(collection.name,
+            Answers.logContentView(withName: collection.name,
                 contentType: "Collection",
                 contentId: String(collection.id),
                 customAttributes: nil
@@ -131,13 +131,13 @@ final class StoreViewController: UIViewController, UITableViewDelegate {
             let cell = sender as! ProductPreviewCollectionViewCell
             let product = cell.product
 
-            let productDetailViewController = segue.destinationViewController as! ProductDetailViewController
+            let productDetailViewController = segue.destination as! ProductDetailViewController
             productDetailViewController.product = product
 
             // Log Content View Event in Answers.
-            Answers.logContentViewWithName(product.name,
+            Answers.logContentView(withName: product?.name,
                 contentType: "Product",
-                contentId: String(product.id),
+                contentId: String(describing: product?.id),
                 customAttributes: nil
             )
         default:
@@ -145,11 +145,11 @@ final class StoreViewController: UIViewController, UITableViewDelegate {
         }
     }
 
-    private func cellHeightForLayout(layout: StoreLayout) -> CGFloat {
+    fileprivate func cellHeightForLayout(_ layout: StoreLayout) -> CGFloat {
         switch layout {
-        case .Basic:
+        case .basic:
             return view.bounds.width / 2 + 10
-        case .Rich:
+        case .rich:
             return view.bounds.width / 2 + 100
         }
     }
@@ -160,7 +160,7 @@ final class StoreViewController: UIViewController, UITableViewDelegate {
         // Fetch collections from the API.
         FurniAPI.sharedInstance.getCollectionList { collections in
             // Sort collections by most recent first and reload the table.
-            self.collections = collections.sort { $0.date!.compare($1.date!) == .OrderedDescending }
+            self.collections = collections.sorted { $0.date!.compare($1.date! as Date) == .orderedDescending }
             self.tableView.reloadData()
 
             // Stop animating the refresh control.

@@ -35,14 +35,14 @@ class User {
     func populateWithLocalContact() {
         guard let digitsPhoneNumber = digitsPhoneNumber else { return }
 
-        guard CNContactStore.authorizationStatusForEntityType(.Contacts) == .Authorized else { return }
+        guard CNContactStore.authorizationStatus(for: .contacts) == .authorized else { return }
 
         let store = CNContactStore()
-        let fetchRequest = CNContactFetchRequest(keysToFetch: [CNContactPhoneNumbersKey, CNContactFormatter.descriptorForRequiredKeysForStyle(.FullName), CNContactPostalAddressesKey, CNContactImageDataKey])
+        let fetchRequest = CNContactFetchRequest(keysToFetch: [CNContactPhoneNumbersKey as CNKeyDescriptor, CNContactFormatter.descriptorForRequiredKeys(for: .fullName), CNContactPostalAddressesKey as CNKeyDescriptor, CNContactImageDataKey as CNKeyDescriptor])
 
         do {
-            try store.enumerateContactsWithFetchRequest(fetchRequest) { (contact, stop) in
-                let matchingPhoneNumbers = contact.phoneNumbers.map { $0.value as! CNPhoneNumber }.filter {
+            try store.enumerateContacts(with: fetchRequest) { (contact, stop) in
+                let matchingPhoneNumbers = contact.phoneNumbers.map { $0.value }.filter {
                     phoneNumber($0, matchesPhoneNumberString: digitsPhoneNumber)
                 }
 
@@ -50,11 +50,11 @@ class User {
                     return
                 }
 
-                self.fullName = CNContactFormatter.stringFromContact(contact, style: .FullName)
+                self.fullName = CNContactFormatter.string(from: contact, style: .fullName)
                 self.image = contact.imageData.flatMap(UIImage.init)
-                self.postalAddress = contact.postalAddresses.map { $0.value as! CNPostalAddress }.first
+                self.postalAddress = contact.postalAddresses.map { $0.value }.first
 
-                stop.memory = true
+                stop.pointee = true
             }
         }
         catch let error as NSError {
@@ -63,8 +63,8 @@ class User {
     }
 }
 
-private func phoneNumber(phoneNumber: CNPhoneNumber, matchesPhoneNumberString phoneNumberString: String) -> Bool {
-    return phoneNumberString.rangeOfString(phoneNumber.stringValue.stringByRemovingOccurrencesOfCharacters(" )(- ")) != nil
+private func phoneNumber(_ phoneNumber: CNPhoneNumber, matchesPhoneNumberString phoneNumberString: String) -> Bool {
+    return phoneNumberString.range(of: phoneNumber.stringValue.stringByRemovingOccurrencesOfCharacters(" )(- ")) != nil
 }
 
 // Note: This is a naive implementation that relies on global state. Avoid this in a production app.

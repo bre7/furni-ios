@@ -22,17 +22,17 @@ final class OrderSuccessfulViewController: UIViewController {
 
     // MARK: Properties
 
-    @IBOutlet private weak var thanksLabel: UILabel!
+    @IBOutlet fileprivate weak var thanksLabel: UILabel!
 
-    @IBOutlet private weak var orderNumberLabel: UILabel!
+    @IBOutlet fileprivate weak var orderNumberLabel: UILabel!
 
-    @IBOutlet private weak var customerServiceLabel: UILabel!
+    @IBOutlet fileprivate weak var customerServiceLabel: UILabel!
 
-    @IBOutlet private weak var twitterButton: UIButton!
+    @IBOutlet fileprivate weak var twitterButton: UIButton!
 
     // MARK: IBActions
 
-    @IBAction private func twitterButtonTapped(sender: AnyObject) {
+    @IBAction fileprivate func twitterButtonTapped(_ sender: AnyObject) {
         if AccountManager.defaultAccountManager.twitterIdentity != nil {
             tweetToFurni()
         } else {
@@ -56,23 +56,23 @@ final class OrderSuccessfulViewController: UIViewController {
 
         // Customize the Twitter button.
         twitterButton.decorateForFurni()
-        twitterButton.setImage(UIImage(named: "Twitter")?.imageWithRenderingMode(.AlwaysTemplate), forState: .Normal)
+        twitterButton.setImage(UIImage(named: "Twitter")?.withRenderingMode(.alwaysTemplate), for: UIControlState())
 
         // Update Twitter / Customer Service labels.
         updateTwitterLabels()
     }
 
-    private func updateTwitterLabels() {
+    fileprivate func updateTwitterLabels() {
         if AccountManager.defaultAccountManager.twitterIdentity != nil {
             customerServiceLabel.text = "Thank you for connecting your Twitter account! Tweet any questions @furni, we’re here to help! 💁"
-            twitterButton.setTitle(" TWEET TO @FURNI", forState: .Normal)
+            twitterButton.setTitle(" TWEET TO @FURNI", for: UIControlState())
         } else {
             customerServiceLabel.text = "Did you know you can link your Twitter account for a great customer experience? 💁"
-            twitterButton.setTitle(" CONNECT WITH TWITTER", forState: .Normal)
+            twitterButton.setTitle(" CONNECT WITH TWITTER", for: UIControlState())
         }
     }
 
-    private func tweetToFurni() {
+    fileprivate func tweetToFurni() {
         // Use the TwitterKit to create a Tweet composer.
         let composer = TWTRComposer()
 
@@ -80,13 +80,13 @@ final class OrderSuccessfulViewController: UIViewController {
         composer.setText("Hey @furni! ")
 
         // Present the composer to the user.
-        composer.showFromViewController(self) { result in
-            if result == .Done {
+        composer.show(from: self) { result in
+            if result == .done {
                 // Log Custom Event in Answers.
-                Answers.logCustomEventWithName("Tweet Completed", customAttributes: nil)
-            } else if result == .Cancelled {
+                Answers.logCustomEvent(withName: "Tweet Completed", customAttributes: nil)
+            } else if result == .cancelled {
                 // Log Custom Event in Answers.
-                Answers.logCustomEventWithName("Tweet Cancelled", customAttributes: nil)
+                Answers.logCustomEvent(withName: "Tweet Cancelled", customAttributes: nil)
             }
         }
     }
